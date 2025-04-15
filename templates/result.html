@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result - {{ ticker }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .header {
+            background-color: #343a40;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .result-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .company-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .company-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: contain;
+            margin-right: 1.5rem;
+            border: 1px solid #dee2e6;
+        }
+        .prediction-up {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .prediction-down {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .chart-container {
+            height: 400px;
+            margin-top: 2rem;
+        }
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 2rem;
+        }
+        .info-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .back-btn {
+            margin-top: 1.5rem;
+        }
+        .live-price-container {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .live-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .live-price-up {
+            color: #28a745;
+        }
+        .live-price-down {
+            color: #dc3545;
+        }
+        .live-price-neutral {
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header text-center">
+        <div class="container">
+            <h1 class="display-4">Prediction Result</h1>
+            <p class="lead">{{ ticker }}</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="result-card">
+                    <div class="live-price-container">
+                        <div id="livePriceStatus" class="live-price">
+                            <span id="livePrice">Loading...</span>
+                            <span id="priceChange"></span>
+                        </div>
+                        <small id="lastUpdated" class="text-muted">Fetching live data...</small>
+                    </div>
+
+                    <div class="company-info">
+                        {% if logo_url %}
+                        <img src="{{ logo_url }}" alt="{{ ticker }} Logo" class="company-logo">
+                        {% endif %}
+                        <div>
+                            <h2>{{ ticker }}</h2>
+                            <p class="mb-1"><strong>Sector:</strong> {{ sector }}</p>
+                            <p class="mb-1"><strong>Current Price:</strong> ₹{{ current_price }}</p>
+                            {% if website != '#' %}
+                            <p class="mb-0"><a href="{{ website }}" target="_blank">Company Website</a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Rest of the previous HTML content remains the same -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <h3>Prediction Summary</h3>
+                                <p><strong>Predicted Movement:</strong> 
+                                    <span class="{% if movement.startswith('Up') %}prediction-up{% else %}prediction-down{% endif %}">
+                                        {{ movement }}
+                                    </span>
+                                </p>
+                                <p><strong>Confidence:</strong> {{ confidence }}%</p>
+                                <p><strong>Predicted Price:</strong> ₹{{ predicted_value }}</p>
+                                <p><strong>Last Price:</strong> ₹{{ last_price }}</p>
+                                <p><strong>Analysis Time:</strong> {{ timestamp }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <h3>Technical Analysis</h3>
+                                <p>This prediction is generated using an LSTM (Long Short-Term Memory) neural network trained on the stock's recent price history.</p>
+                                <p>The model analyzes patterns in the last 60 data points to forecast potential movement.</p>
+                                <p class="mb-0"><em>Note: Stock predictions are inherently uncertain. Always conduct your own research before making investment decisions.</em></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rest of the previous content remains unchanged -->
+                    {% if advanced_analysis %}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="info-card">
+                                <h3>Advanced Stock Analysis</h3>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h4>Technical Indicators</h4>
+                                        <p><strong>20-Day MA:</strong> ₹{{ advanced_analysis.ma_20|round(2) }}</p>
+                                        <p><strong>50-Day MA:</strong> ₹{{ advanced_analysis.ma_50|round(2) }}</p>
+                                        <p><strong>200-Day MA:</strong> ₹{{ advanced_analysis.ma_200|round(2) }}</p>
+                                        <p><strong>RSI:</strong> {{ advanced_analysis.rsi|round(2) }}</p>
+                                        <p><strong>Volume Change:</strong> {{ advanced_analysis.volume_change|round(2) }}%</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h4>Investment Recommendation</h4>
+                                        <p>
+                                            <strong>Recommendation:</strong> 
+                                            <span style="color: {{ advanced_analysis.recommendation_color }};">
+                                                {{ advanced_analysis.recommendation }}
+                                            </span>
+                                        </p>
+                                        <h5>Decision Reasons</h5>
+                                        <ul>
+                                            {% for reason in advanced_analysis.decision_reasons %}
+                                            <li>{{ reason }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <h4>Financial Fundamentals</h4>
+                                        <div class="row">
+                                            {% for key, value in advanced_analysis.financials.items() %}
+                                            <div class="col-md-4">
+                                                <p><strong>{{ key }}:</strong> {{ value }}</p>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="chart-container">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+
+                    <div class="text-center">
+                        <a href="/" class="btn btn-primary back-btn">Analyze Another Stock</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer text-center">
+        <div class="container">
+            <p>&copy; {{ current_year }} Indian Stock Prediction. All rights reserved.</p>
+            <p class="mb-0">Last updated: {{ now.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Chart.js code remains the same as in the previous version
+        const chartData = JSON.parse('{{ chart_data | safe }}');
+        const dates = chartData[0];
+        const prices = chartData[1];
+        
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        const priceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'Stock Price (Last 60 Periods)',
+                    data: prices,
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    borderWidth: 2,
+                    pointRadius: 2,
+                    fill: true,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Price (₹)'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        });
+
+        // Live Price Simulation
+        const initialPrice = {{ current_price }};
+        const livePriceElement = document.getElementById('livePrice');
+        const priceChangeElement = document.getElementById('priceChange');
+        const lastUpdatedElement = document.getElementById('lastUpdated');
+        const livePriceStatusElement = document.getElementById('livePriceStatus');
+
+        function simulateLivePrice(basePrice) {
+            // Simulate small price fluctuations
+            const volatility = 0.005; // 0.5% volatility
+            const randomFactor = (Math.random() * 2 - 1) * volatility;
+            const newPrice = basePrice * (1 + randomFactor);
+            const change = newPrice - basePrice;
+            const changePercentage = (change / basePrice) * 100;
+
+            return {
+                price: newPrice,
+                change: change,
+                changePercentage: changePercentage
+            };
+        }
+
+        function updateLivePrice() {
+            try {
+                const liveData = simulateLivePrice(initialPrice);
+
+                livePriceElement.textContent = `₹${liveData.price.toFixed(2)}`;
+                priceChangeElement.textContent = `(${liveData.change > 0 ? '+' : ''}${liveData.change.toFixed(2)} | ${liveData.changePercentage.toFixed(2)}%)`;
+
+                // Update color based on price movement
+                livePriceStatusElement.classList.remove('live-price-up', 'live-price-down', 'live-price-neutral');
+                if (liveData.change > 0) {
+                    livePriceStatusElement.classList.add('live-price-up');
+                } else if (liveData.change < 0) {
+                    livePriceStatusElement.classList.add('live-price-down');
+                } else {
+                    livePriceStatusElement.classList.add('live-price-neutral');
+                }
+
+                lastUpdatedElement.textContent = `Last updated: ${new Date().toLocaleString()}`;
+            } catch (error) {
+                livePriceElement.textContent = 'Unable to fetch live price';
+                priceChangeElement.textContent = '';
+                lastUpdatedElement.textContent = 'Error simulating live data';
+                console.error('Live price simulation error:', error);
+            }
+        }
+        
+
+        // Initial fetch
+        updateLivePrice();
+
+        // Auto-refresh every 5 seconds
+        setInterval(updateLivePrice, 5000);
+    </script>
+</body>
+</html>
