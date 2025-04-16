@@ -1,4 +1,7 @@
 📈 Indian Stock Movement Predictor
+
+
+
 This Flask web application predicts the next movement (Up or Down) of Indian stocks using LSTM deep learning models and technical indicators. It also provides live stock data, advanced analysis, and interactive charts for better decision-making.
 
 🚀 Features
