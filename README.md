@@ -1,4 +1,4 @@
-📈 Indian Stock Movement Predictor
+# 📈 Indian Stock Movement Predictor
 
 
 
