@@ -1,65 +1,76 @@
-# 📈 Indian Stock Movement Predictor
+# Live Indian Stock Market Prediction
 
+This project is a web application that predicts the movement of Indian stock prices using AI-powered LSTM neural networks. It provides live price updates, technical analysis, and investment recommendations for a wide range of NSE-listed stocks.
 
+## Features
 
-This Flask web application predicts the next movement (Up or Down) of Indian stocks using LSTM deep learning models and technical indicators. It also provides live stock data, advanced analysis, and interactive charts for better decision-making.
+- **Live Stock Prediction:** Select from a list of Indian stocks and get AI-based predictions for the next movement.
+- **LSTM Neural Network:** Uses a Long Short-Term Memory (LSTM) model trained on recent price history.
+- **Technical Analysis:** Displays moving averages, RSI, volume change, and more.
+- **Investment Recommendation:** Offers a recommendation (Buy/Hold/Sell) with reasons and financial fundamentals.
+- **Modern UI:** Clean, responsive interface built with Bootstrap.
 
-🚀 Features
-🔍 Search from 400+ Indian NSE stocks (e.g., RELIANCE.NS, TCS.NS)
+## How It Works
 
-📊 Predict stock movement using a trained LSTM model
+1. **User selects a stock** from the dropdown menu on the homepage.
+2. The app fetches recent historical data using `yfinance`.
+3. Data is preprocessed and fed into an LSTM model for prediction.
+4. The result page displays:
+   - Predicted movement (Up/Down) and confidence
+   - Live price and change
+   - Technical indicators and advanced analysis
+   - Investment recommendation and financials
+   - Price chart
 
-📉 Visualize the last 60 days' prices with interactive charts
+## Installation
 
-💡 Advanced analysis:
+1. **Clone the repository:**
+   ```bash
+   git clone <repo-url>
+   cd live-indian_stockmarket_prediction
+   ```
 
-20/50/200-day Moving Averages
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-RSI (Relative Strength Index)
+3. **Run the app:**
+   ```bash
+   python app.py
+   ```
+   The app will be available at `http://127.0.0.1:5000/`.
 
-Volume spike detection
+## Requirements
 
-Buy/Sell recommendations
+- Python 3.7+
+- See `requirements.txt` for all dependencies:
+  ```
+  numpy
+  scipy
+  pandas
+  scikit-learn
+  gunicorn
+  flask
+  tensorflow
+  yfinance
+  matplotlib
+  ```
 
-🏷️ Real-time prices, company info, and sector
+## Usage
 
-📈 Confidence score for predictions
+- Open your browser and go to `http://127.0.0.1:5000/`.
+- Select a stock and click "Predict Movement".
+- View the prediction, technical analysis, and recommendations.
 
-🧠 Caching for faster performance
+## Notes
 
-🛠️ Tech Stack
-Backend: Flask, TensorFlow/Keras, Scikit-learn
+- **Disclaimer:** Stock predictions are inherently uncertain. Always conduct your own research before making investment decisions.
+- The model uses the last 60 data points for prediction and is retrained on each request for up-to-date results.
 
-Frontend: Jinja2 (HTML Templates), Chart.js (via JSON)
+## File Structure
 
-Data: yfinance for real-time stock data
-
-Model: LSTM Neural Network (Sequential)
-
-🧠 How It Works
-User selects a stock and submits the form.
-
-The app fetches the past 60+ days of closing prices.
-
-An LSTM model is trained on this data to predict the next price.
-
-The prediction is compared to the current price to determine:
-
-Direction: Up or Down
-
-Confidence: % difference
-
-A recommendation is generated based on:
-
-RSI
-
-Volume trends
-
-Moving averages
-
-🔐 Notes
-Uses lru_cache and TTL hash for caching stock data (15 mins).
-
-Trains the LSTM model in real-time per request (optional: cache predictions).
-
-Tickers are from NSE and must end with .NS (e.g., INFY.NS)
+- `app.py` — Main Flask application and ML logic
+- `templates/index.html` — Homepage (stock selection)
+- `templates/result.html` — Prediction result and analysis page
+- `requirements.txt` — Python dependencies 
